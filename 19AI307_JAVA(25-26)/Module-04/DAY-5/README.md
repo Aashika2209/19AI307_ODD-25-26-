@@ -1,29 +1,25 @@
 # Ex.No:4(E) DESIGN PATTERN ---- BEHAVIOUR PATTERN
 
 ## QUESTION:
-Write a Java program to demonstrate a **Behavioral Design Pattern** using the **Observer Pattern**.
+Create a ChatRoom class (mediator) and two users (colleagues) who send and receive messages through it. No direct communication allowed. (Mediator Pattern)
+<img width="718" height="724" alt="image" src="https://github.com/user-attachments/assets/84619fdb-d6d4-4148-a413-b6bab3807009" />
 
 
 ## AIM:
-To write a Java program to demonstrate the **Observer Pattern**, where multiple objects are notified when a change occurs.
+To implement the Mediator Design Pattern using a ChatRoom class where users communicate indirectly through a mediator..
 
 
 ## ALGORITHM :
-1. Start the program.  
-2. Import the necessary package `java.util`.  
-3. Create an interface `Observer` with a method `update()`.  
-4. Create a class `Subscriber` that implements the `Observer` interface.  
-5. Define a variable `name` and override the `update()` method.  
-6. Create a class `Channel` (Subject).  
-7. Declare a list to store observers (subscribers).  
-8. Create a method `subscribe()` to add observers.  
-9. Create a method `notifySubscribers()` to notify all observers.  
-10. Create a method `uploadVideo()` to simulate a change and notify observers.  
-11. In the main class, create a `Channel` object.  
-12. Read subscriber details and add them to the channel.  
-13. Read video title and call `uploadVideo()`.  
-14. Display notifications for each subscriber.  
-15. Stop the program.
+1. Start the program.
+2. Import the package java.util.*.
+3. Create a ChatRoom class as the mediator.
+4. Maintain a collection of registered users in the ChatRoom.
+5. Create a User class with methods to send and receive messages.
+6. Register users with the ChatRoom.
+7. Read the sender, receiver, and message from the user.
+8. Send messages through the ChatRoom mediator.
+9. Display the received messages.
+10. Stop the program.
 
 
 
@@ -35,103 +31,95 @@ Program to implement Behaviour Pattern using Java (Observer Pattern)
 Developed by: AASHIKA JAIN
 RegisterNumber: 212224110001
 */
-
-import java.util.*;
-
-interface Observer {
-    void update(String channelName, String videoTitle);
-}
-
-class Subscriber implements Observer {
-    private String name;
-
-    public Subscriber(String name) {
-        this.name = name;
-    }
-
-    public void update(String channelName, String videoTitle) {
-        System.out.println(name + " received notification: " + channelName + " uploaded " + videoTitle);
-    }
-}
-
-class Channel {
-    private String channelName;
-    private List<Observer> subscribers = new ArrayList<>();
-
-    public Channel(String name) {
-        this.channelName = name;
-    }
-
-    public void subscribe(Observer o) {
-        subscribers.add(o);
-    }
-
-    public void notifySubscribers(String videoTitle) {
-        for (Observer o : subscribers) {
-            o.update(channelName, videoTitle);
-        }
-    }
-
-    public void uploadVideo(String videoTitle) {
-        System.out.println(channelName + " uploaded: " + videoTitle);
-        notifySubscribers(videoTitle);
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        String channelName = sc.nextLine();
-        Channel channel = new Channel(channelName);
-
-        int n = sc.nextInt();
-        sc.nextLine();
-
-        for (int i = 0; i < n; i++) {
-            String name = sc.nextLine();
-            channel.subscribe(new Subscriber(name));
-        }
-
-        String videoTitle = sc.nextLine();
-        channel.uploadVideo(videoTitle);
-    }
-}
 ```
-
-
 
 ## SOURCE CODE:
 
-Compile the program using
+```
+import java.util.*;
 
-```
-javac Main.java
+class ChatRoom {
+    private Map<String, User> users = new HashMap<>();
+
+    // Register users
+    public void register(User user) {
+        users.put(user.getName(), user);
+    }
+
+    // Send message through mediator
+    public void sendMessage(String from, String to, String message) {
+        User receiver = users.get(to);
+
+        if (receiver != null) {
+            receiver.receive(from, message);
+        }
+    }
+}
+
+class User {
+    private String name;
+    private ChatRoom chatRoom;
+
+    public User(String name, ChatRoom chatRoom) {
+        this.name = name;
+        this.chatRoom = chatRoom;
+        chatRoom.register(this);
+    }
+
+    public void send(String to, String message) {
+        chatRoom.sendMessage(name, to, message);
+    }
+
+    public void receive(String from, String message) {
+        System.out.println(from + " to " + name + ": " + message);
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+public class ChatApp {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        ChatRoom room = new ChatRoom();
+
+        String user1 = sc.nextLine();
+        String user2 = sc.nextLine();
+
+        User u1 = new User(user1, room);
+        User u2 = new User(user2, room);
+
+        int n = Integer.parseInt(sc.nextLine());
+
+        for (int i = 0; i < n; i++) {
+            String sender = sc.nextLine();
+            String receiver = sc.nextLine();
+            String message = sc.nextLine();
+
+            if (sender.equals(u1.getName())) {
+                u1.send(receiver, message);
+            } else if (sender.equals(u2.getName())) {
+                u2.send(receiver, message);
+            }
+        }
+
+        sc.close();
+    }
+}
 ```
 
-Run the program using
-
-```
-java Main
-```
 
 
 
 ## OUTPUT:
 
-```
-TechWorld
-2
-Hari
-Priya
-Java Basics
-TechWorld uploaded: Java Basics
-Hari received notification: TechWorld uploaded Java Basics
-Priya received notification: TechWorld uploaded Java Basics
-```
+<img width="1198" height="740" alt="image" src="https://github.com/user-attachments/assets/17da8af6-4d0b-41b6-8006-aef7190247a9" />
+
 
 
 
 ## RESULT:
 
-Thus, the Java program to demonstrate the **Behavioral Design Pattern (Observer Pattern)** was executed successfully and the output was verified.
+Thus, the Mediator Design Pattern was implemented successfully using a ChatRoom mediator that enables communication between users without direct interaction.
